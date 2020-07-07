@@ -16,12 +16,12 @@ Android Mobile의 경우 Kiwi Browser, Firefox 등의 브라우저에서 유저 
 
 사용 방법(관리자)
   1. Node.js가 설치된 환경에서 멘나스 블랙리스트 서버를 실행하기 위해 다음 명령을 실행합니다.
-```
+   ```
 git clone https://github.com/ASCIIPhilia/mennas
 cd mennas
 npm install
 npm start
-```
+   ```
   2. Apache 혹은 Nginx 또는 그 외의 HTTPS Reverse Proxy를 지원하는 웹 서버를 사용하여 최종 사용자에게 HTTPS로 멘나스 블랙리스트를 제공합니다.
   
   3. [userscript-wrapper.js](https://github.com/ASCIIPhilia/mennas/blob/master/userscript-wrapper.js)의 blacklistServerURL, galleryId를 수정합니다.
