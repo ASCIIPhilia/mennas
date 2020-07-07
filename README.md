@@ -22,6 +22,16 @@ cd mennas
 npm install
 npm start
 ```
+  [index.js](https://github.com/ASCIIPhilia/mennas/blob/master/userscript-wrapper.js)의 다음 부분을 수정하여 맞춤 설정합니다.
+```
+const port = process.env.PORT || 5050;
+const backupTime = 1000 * 60 * 10;
+console.log('BACKUP TIME: ' + backupTime);
+
+const authMap = {
+    'AuthUser': 'AuthCode'
+};
+```
   2. Apache 혹은 Nginx 또는 그 외의 HTTPS Reverse Proxy를 지원하는 웹 서버를 사용하여 최종 사용자에게 HTTPS로 멘나스 블랙리스트를 제공합니다.
   
   3. [userscript-wrapper.js](https://github.com/ASCIIPhilia/mennas/blob/master/userscript-wrapper.js)의 blacklistServerURL, galleryId를 수정합니다.
