@@ -15,14 +15,14 @@ Android Mobile의 경우 Kiwi Browser, Firefox 등의 브라우저에서 유저 
 
 
 ### 사용 방법(관리자)
-  1. Node.js가 설치된 환경에서 멘나스 블랙리스트 서버를 실행하기 위해 다음 명령을 실행합니다.
+  1-1. Node.js가 설치된 환경에서 멘나스 블랙리스트 서버를 실행하기 위해 다음 명령을 실행합니다. (세부 설정은 1-2. 참조)
 ```
 git clone https://github.com/ASCIIPhilia/mennas
 cd mennas
 npm install
 npm start
 ```
-  [index.js](https://github.com/ASCIIPhilia/mennas/blob/master/userscript-wrapper.js)의 다음 부분을 수정하여 맞춤 설정합니다.
+  1-2. [index.js](https://github.com/ASCIIPhilia/mennas/blob/master/userscript-wrapper.js)의 다음 부분을 수정하여 맞춤 설정합니다.
 ```
 const port = process.env.PORT || 5050;
 const backupTime = 1000 * 60 * 10;
