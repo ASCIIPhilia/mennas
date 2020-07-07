@@ -23,6 +23,7 @@ db.defaults({
     blacklist: {}
 }).write();
 
+!fs.existsSync('./backup') && fs.mkdirSync('./backup');
 setInterval(_ => {
     fs.writeFileSync(`./backup/${new Date().getTime()}.json`, JSON.stringify(db.get('blacklist').value()), 'utf8');
 }, backupTime);
