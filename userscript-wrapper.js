@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         디씨의 목소리, 멘나스 (Wrapper)
+// @name         디시의 목소리, 멘나스 (Wrapper)
 // @name:en      Mennas, the Voice of DCInside (Wrapper)
 // @version      1.8
 // @description  침묵시켜야 할 자를 침묵시킵니다.
