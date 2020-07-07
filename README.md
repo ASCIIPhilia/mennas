@@ -45,3 +45,4 @@ var MENNAS = {
 };
 ```
   4. [GreasyFork](http://greasyfork.org)등의 유저 스크립트 배포 사이트를 이용하여 공개 배포하여 사용합니다. 
+  5. `${MENNAS.blacklistServerURL}/blacklist`
