@@ -11,7 +11,7 @@ const adapter = new FileSync('db.json');
 const db = low(adapter);
 const atob = s => Buffer.from(s, 'base64');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const backupTime = 1000 * 60 * 10;
 console.log('BACKUP TIME: ' + backupTime);
 
