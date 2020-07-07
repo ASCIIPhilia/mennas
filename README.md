@@ -17,8 +17,8 @@ Android Mobile의 경우 Kiwi Browser, Firefox 등의 브라우저에서 유저 
 
 사용 방법(관리자)
 ```
-git clone https://github.com/ASCIIPhilia/mennas
-cd mennas
-npm install
-npm start
+$ git clone https://github.com/ASCIIPhilia/mennas
+$ cd mennas
+$ npm install
+$ npm start
 ```
