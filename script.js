@@ -5,10 +5,12 @@
         element.parentNode.insertBefore(this, element.nextSibling);
     }
 
-    function getMobileCurrentNoByURL() {
-        return location.href.split('/').pop().split('?').shift();
+    function getMobileCurrentNo() {
+        return getMobileURLNo(location.href);
     }
-
+    function getMobileURLNo(url) {
+        return url.split('/').pop().split('?').shift();
+    }
     function getQueryMap() {
         var p = [];
         window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (s, k, v) => p[k] = v);
@@ -140,6 +142,8 @@
             e.hide();
         }
     }
+	
+	
     function isCommentBlocked(currentComment) {
         var isBlocked = currentComment && currentComment.isBlocked === true;
         var isLegacyBlocked = currentComment && currentComment.isBlocked === undefined;
@@ -173,8 +177,9 @@
         });
     }
 
+const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
     function hideMobileElements(json) {
-        var currentNo = getMobileCurrentNoByURL();
+        var currentNo = getMobileCurrentNo();
         var currentPost = json[currentNo];
         if (currentPost) {
             $(MOBILE_COMMENT_SELECTOR).toArray().map(e => $(e)).forEach(e => {
@@ -185,6 +190,7 @@
                 }
             });
         }
+		
         $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
             var no = parseMobilePostListElement(e).no;
             var isBlacklistPost = json[no];
@@ -193,6 +199,17 @@
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
         });
+		
+		var recommandURL =  $(MOBILE_RECOMMAND_SELECTOR).find('#recom_title_topLink').attr('href').match(/(?<=')(http|https):\/\/.+?(?=')/gi);
+		if(recommandURL) {
+			recommandURL = recommandURL[0];
+			var no = getMobileURLNo(recommandURL);
+            var isBlacklistPost = json[no];
+            // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+            if (isPostBlocked(isBlacklistPost)) {
+                applyMennasByMode($(MOBILE_RECOMMAND_SELECTOR), 'POST', isBlacklistPost);
+            }
+		}
     }
 
     function hideBlacklist(json) {
@@ -390,7 +407,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '1.7';
+        MENNAS.version = '1.8';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
