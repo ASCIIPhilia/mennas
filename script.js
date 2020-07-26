@@ -142,8 +142,7 @@
             e.hide();
         }
     }
-	
-	
+
     function isCommentBlocked(currentComment) {
         var isBlocked = currentComment && currentComment.isBlocked === true;
         var isLegacyBlocked = currentComment && currentComment.isBlocked === undefined;
@@ -177,7 +176,7 @@
         });
     }
 
-const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
+    const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
     function hideMobileElements(json) {
         var currentNo = getMobileCurrentNo();
         var currentPost = json[currentNo];
@@ -190,7 +189,7 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
                 }
             });
         }
-		
+
         $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
             var no = parseMobilePostListElement(e).no;
             var isBlacklistPost = json[no];
@@ -199,17 +198,17 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
         });
-		
-		var recommandURL =  $(MOBILE_RECOMMAND_SELECTOR).find('#recom_title_topLink').attr('href').match(/(?<=')(http|https):\/\/.+?(?=')/gi);
-		if(recommandURL) {
-			recommandURL = recommandURL[0];
-			var no = getMobileURLNo(recommandURL);
+
+        var recommandURL = $(MOBILE_RECOMMAND_SELECTOR).find('#recom_title_topLink').attr('href').match(/(?<=')(http|https):\/\/.+?(?=')/gi);
+        if (recommandURL) {
+            recommandURL = recommandURL[0];
+            var no = getMobileURLNo(recommandURL);
             var isBlacklistPost = json[no];
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode($(MOBILE_RECOMMAND_SELECTOR), 'POST', isBlacklistPost);
             }
-		}
+        }
     }
 
     function hideBlacklist(json) {
@@ -317,7 +316,7 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
 
     function addPCCommentDeleteButton() {
         $(PC_COMMENT_SELECTOR).find('.date_time').css('cursor', 'pointer');
-        $(PC_COMMENT_SELECTOR).find('.date_time').on('click', e => {
+        $(PC_COMMENT_SELECTOR).find('.date_time').off('click').on('click', e => {
             e = $(e.target).parent().parent();
             var info = parsePCCommentListElement(e);
             var no = info.no;
@@ -382,6 +381,14 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
         authButton2.on('click', authMennas);
         $('.view_bottom_btnbox .fl').append(authButton2);
     }
+	function addPCCommentHook(){
+		self._viewComments = viewComments;
+			viewComments = function () {
+				_viewComments.apply(_viewComments, arguments);
+				hide();
+				addPCCommentDeleteButton();
+			}
+	}
 
     function addMobileAuthButton() {
         var authButton = $('<a class="lnk" href="#">멘나스</a>');
@@ -398,6 +405,7 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
         var mennasInfo = $(`<a href="https://mennas.roguelike.network"><p class="cpt">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</p></a>`);
         $('.ft-btm').append(mennasInfo);
     }
+	
 
     /* ===== INIT & CORE LOGIC ===== */
     function initMennas() {
@@ -420,13 +428,19 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
         console.log(`Blacklist Server: ${MENNAS.blacklistServerURL}`);
         console.log(`GalleryId: ${MENNAS.galleryId}`);
     }
-
+    const observerConfig = {
+        attributes: true,
+        childList: true,
+        characterData: true
+    };
+	
     function initPC() {
         hide();
         addPCPostDeleteButton();
         addPCCommentDeleteButton();
         addPCAuthButton();
         addPCMennasInfo();
+		addPCCommentHook();
     }
 
     function initMobile() {
@@ -444,20 +458,15 @@ const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
         var postObserver1 = new MutationObserver(mutationCallback);
         var postObserver2 = new MutationObserver(mutationCallback);
         var commentObserver = new MutationObserver(mutationCallback);
-        var config = {
-            attributes: true,
-            childList: true,
-            characterData: true
-        };
 
         try {
-            postObserver1.observe($('section:has(.gall-detail-lst)')[0], config);
+            postObserver1.observe($('section:has(.gall-detail-lst)')[0], observerConfig);
         } catch (e) {}
         try {
-            postObserver2.observe($('.gall-detail-lst')[0], config);
+            postObserver2.observe($('.gall-detail-lst')[0], observerConfig);
         } catch (e) {}
         try {
-            commentObserver.observe($('#comment_box')[0], config);
+            commentObserver.observe($('#comment_box')[0], observerConfig);
         } catch (e) {}
     }
 
