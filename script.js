@@ -415,7 +415,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '1.8';
+        MENNAS.version = '1.9';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
