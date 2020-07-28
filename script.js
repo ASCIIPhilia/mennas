@@ -52,7 +52,7 @@
             nick_type: (e.find('.sp-nick').attr('class') ? e.find('.sp-nick').attr('class') : '').split(' ').pop(),
             date: e.find('.ginfo > li:nth-child(2)').text(),
             count: parseInt(e.find('.ginfo > li:nth-child(3)').text().split(' ').pop()),
-            recommands: parseInt(e.find('.ginfo > li:nth-child(4)').text().split(' ').pop()),
+            recommends: parseInt(e.find('.ginfo > li:nth-child(4)').text().split(' ').pop()),
             comments: parseInt(e.find('.ct').text()),
             voice_comments: e.find('.vo-txt')[0] ? parseInt(e.find('.vo-txt').text()) : 0
         }
@@ -152,34 +152,34 @@
     function isPostBlocked(isBlacklistPost) {
         return isBlacklistPost && isBlacklistPost.isBlocked
     }
-	
-	function getBlockedCommentNumber(comments){
-		var blockedCommentNumber = 0;
-		for (const key in comments) {
-			var value = comments[key];
-			blockedCommentNumber += value.isBlocked ? 1 : 0;
-		}
-		return blockedCommentNumber;
-	}
-	
-	function displayBlockedCommentNumber(e, data){
-		var blockedCommentNumber = 0;
-		if(data && data.comments){
-			blockedCommentNumber = getBlockedCommentNumber(data.comments);
-		}
-		
-		if(blockedCommentNumber != 0){
-			if (MENNAS.isPC) {
-				if(e.find('.blocked_reply_num').length == 0){
-					e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${blockedCommentNumber}</span>`));
-				}
+
+    function getBlockedCommentNumber(comments) {
+        var blockedCommentNumber = 0;
+        for (const key in comments) {
+            var value = comments[key];
+            blockedCommentNumber += value.isBlocked ? 1 : 0;
+        }
+        return blockedCommentNumber;
+    }
+
+    function displayBlockedCommentNumber(e, data) {
+        var blockedCommentNumber = 0;
+        if (data && data.comments) {
+            blockedCommentNumber = getBlockedCommentNumber(data.comments);
+        }
+
+        if (blockedCommentNumber != 0) {
+            if (MENNAS.isPC) {
+                if (e.find('.blocked_reply_num').length == 0) {
+                    e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${blockedCommentNumber}</span>`));
+                }
             } else if (MENNAS.isMobile) {
-				if(e.find('.blocked_reply_num').length == 0){
-					e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${blockedCommentNumber}</span>`));
-				}
-			}
-		}
-	}
+                if (e.find('.blocked_reply_num').length == 0) {
+                    e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${blockedCommentNumber}</span>`));
+                }
+            }
+        }
+    }
 
     function hidePCElements(json) {
         var currentPost = json[MENNAS.queryMap.no];
@@ -201,11 +201,12 @@
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
-			displayBlockedCommentNumber(e, isBlacklistPost);
+            displayBlockedCommentNumber(e, isBlacklistPost);
         });
     }
 
-    const MOBILE_RECOMMAND_SELECTOR = '#recom_box1';
+    const MOBILE_RECOMMEND_SELECTOR = '#recom_box1';
+    const MOBILE_RECOMMEND_BOX_SELECTOR = '#recom_title_box';
     function hideMobileElements(json) {
         var currentNo = getMobileCurrentNo();
         var currentPost = json[currentNo];
@@ -222,24 +223,38 @@
         $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
             var no = parseMobilePostListElement(e).no;
             var isBlacklistPost = json[no];
-			
+
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
-			displayBlockedCommentNumber(e, isBlacklistPost);
+            displayBlockedCommentNumber(e, isBlacklistPost);
         });
 
-        var recommandURL = $(MOBILE_RECOMMAND_SELECTOR).find('#recom_title_topLink').attr('href').match(/(?<=')(http|https):\/\/.+?(?=')/gi);
-        if (recommandURL) {
-            recommandURL = recommandURL[0];
-            var no = getMobileURLNo(recommandURL);
+        var recommendURL = $(MOBILE_RECOMMEND_SELECTOR).find('#recom_title_topLink').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
+        if (recommendURL) {
+            recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
+            var no = getMobileURLNo(recommendURL);
             var isBlacklistPost = json[no];
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
-                applyMennasByMode($(MOBILE_RECOMMAND_SELECTOR), 'POST', isBlacklistPost);
+                applyMennasByMode($(MOBILE_RECOMMEND_SELECTOR), 'POST', isBlacklistPost);
             }
         }
+
+        $(MOBILE_RECOMMEND_BOX_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
+            var recommendURL = e.find('a').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
+            if (recommendURL) {
+                recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
+                var no = getMobileURLNo(recommendURL);
+                var isBlacklistPost = json[no];
+                // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+                if (isPostBlocked(isBlacklistPost)) {
+                    applyMennasByMode(e, 'POST', isBlacklistPost);
+                }
+            }
+        });
+
     }
 
     function hideBlacklist(json) {
@@ -412,17 +427,27 @@
         authButton2.on('click', authMennas);
         $('.view_bottom_btnbox .fl').append(authButton2);
     }
-	
-	function addPCCommentHook(){
-		if(self.viewComments){
-			self._viewComments = self.viewComments;
-			self.viewComments = function () {
-					self._viewComments.apply(self._viewComments, arguments);
-					hide();
-					addPCCommentDeleteButton();
-			}
-		}
-	}
+
+    function addPCCommentHook() {
+        if (self.viewComments) {
+            self._viewComments = self.viewComments;
+            self.viewComments = function () {
+                self._viewComments.apply(self._viewComments, arguments);
+                hide();
+                addPCCommentDeleteButton();
+            }
+        }
+    }
+
+    function addMobileRecommendToggleHook() {
+        if (self.recom_toggle) {
+            self._recom_toggle = self.recom_toggle;
+            self.recom_toggle = function () {
+                self._recom_toggle.apply(self._recom_toggle, arguments);
+                hide();
+            }
+        }
+    }
 
     function addMobileAuthButton() {
         var authButton = $('<a class="lnk" href="#">멘나스</a>');
@@ -439,7 +464,6 @@
         var mennasInfo = $(`<a href="https://mennas.roguelike.network"><p class="cpt">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</p></a>`);
         $('.ft-btm').append(mennasInfo);
     }
-	
 
     /* ===== INIT & CORE LOGIC ===== */
     function initMennas() {
@@ -449,7 +473,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '1.9.5';
+        MENNAS.version = '1.9.7';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
@@ -467,14 +491,14 @@
         childList: true,
         characterData: true
     };
-	
+
     function initPC() {
         hide();
         addPCPostDeleteButton();
         addPCCommentDeleteButton();
         addPCAuthButton();
         addPCMennasInfo();
-		addPCCommentHook();
+        addPCCommentHook();
     }
 
     function initMobile() {
@@ -483,6 +507,7 @@
         addMobilePostDeleteButtion();
         addMobileAuthButton();
         addMobileMennasInfo();
+        addMobileRecommendToggleHook();
         var mutationCallback = (m) => {
             hide();
             addMobileCommentDeleteButton();
