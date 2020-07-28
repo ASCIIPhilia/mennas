@@ -152,6 +152,34 @@
     function isPostBlocked(isBlacklistPost) {
         return isBlacklistPost && isBlacklistPost.isBlocked
     }
+	
+	function getBlockedCommentNumber(comments){
+		var blockedCommentNumber = 0;
+		for (const key in comments) {
+			var value = comments[key];
+			blockedCommentNumber += value.isBlocked ? 1 : 0;
+		}
+		return blockedCommentNumber;
+	}
+	
+	function displayBlockedCommentNumber(e, data){
+		var blockedCommentNumber = 0;
+		if(data && data.comments){
+			blockedCommentNumber = getBlockedCommentNumber(data.comments);
+		}
+		
+		if(blockedCommentNumber != 0){
+			if (MENNAS.isPC) {
+				if(e.find('.blocked_reply_num').length == 0){
+					e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${blockedCommentNumber}</span>`));
+				}
+            } else if (MENNAS.isMobile) {
+				if(e.find('.blocked_reply_num').length == 0){
+					e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${blockedCommentNumber}</span>`));
+				}
+			}
+		}
+	}
 
     function hidePCElements(json) {
         var currentPost = json[MENNAS.queryMap.no];
@@ -173,6 +201,7 @@
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
+			displayBlockedCommentNumber(e, isBlacklistPost);
         });
     }
 
@@ -193,10 +222,12 @@
         $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
             var no = parseMobilePostListElement(e).no;
             var isBlacklistPost = json[no];
+			
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
+			displayBlockedCommentNumber(e, isBlacklistPost);
         });
 
         var recommandURL = $(MOBILE_RECOMMAND_SELECTOR).find('#recom_title_topLink').attr('href').match(/(?<=')(http|https):\/\/.+?(?=')/gi);
@@ -320,7 +351,7 @@
             e = $(e.target).parent().parent();
             var info = parsePCCommentListElement(e);
             var no = info.no;
-            var postNo = MENNAS.queryMap.no;
+            var postNo = parseInt(MENNAS.queryMap.no);
             var targetText = `${info.no} ${info.comment} [${info.nick} ${info.ip}]`;
             var reason = prompt(`${targetText}\n\n이유를 입력해주세요`);
             if (!reason) {
@@ -345,7 +376,7 @@
             e = $(e.target).parent();
             var info = parseMobileCommentListElement(e);
             var no = info.no;
-            var postNo = location.href.split('/').pop().split('?').shift();
+            var postNo = parseInt(getMobileCurrentNo());
 
             var targetText = `${info.no} ${info.comment} [${info.nick}]`;
             var reason = prompt(`${targetText}\n\n이유를 입력해주세요`);
@@ -381,13 +412,16 @@
         authButton2.on('click', authMennas);
         $('.view_bottom_btnbox .fl').append(authButton2);
     }
+	
 	function addPCCommentHook(){
-		self._viewComments = viewComments;
-			viewComments = function () {
-				_viewComments.apply(_viewComments, arguments);
-				hide();
-				addPCCommentDeleteButton();
+		if(self.viewComments){
+			self._viewComments = self.viewComments;
+			self.viewComments = function () {
+					self._viewComments.apply(self._viewComments, arguments);
+					hide();
+					addPCCommentDeleteButton();
 			}
+		}
 	}
 
     function addMobileAuthButton() {
@@ -415,7 +449,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '1.9';
+        MENNAS.version = '1.9.5';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
