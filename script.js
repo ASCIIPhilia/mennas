@@ -38,6 +38,7 @@
     }
 
     const PC_POST_SELECTOR = '.gall_list .ub-content:not(:has(.gall_num:contains(공지), .gall_num:contains(설문)))';
+    // TODO AD, 뉴스 
     function getPCGalleryList() {
         return $(PC_POST_SELECTOR).toArray().map(e => $(e)).map(parsePCPostListElement);
     }
