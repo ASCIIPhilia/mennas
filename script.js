@@ -111,9 +111,9 @@
     }
 
     function timeDelta2Simple(delta) {
-        if (!delta) {
-            return null;
-        }
+		if(!delta){
+			return null;
+		}
         delta = Math.floor(delta / 1000);
         if (delta < 60) {
             return delta + '초';
@@ -129,9 +129,9 @@
     }
 
     function setBlockedInfo(e, type, data) {
-        var timeInfo = timeDelta2Simple(new Date() - new Date(data.queryDate).getTime());
-        timeInfo = timeInfo ? `${timeInfo} 전` : '';
-        var blockedInfo = $('<p class="blocked_info" style="font-weight: bold; white-space: break-spaces;">').text(`* 차단자: ${data.authUser ? data.authUser : data.AUTH_USER} / 이유: ${data.reason} / ${timeInfo}`);
+		var timeInfo = timeDelta2Simple(new Date() - new Date(data.queryDate).getTime());
+		timeInfo = timeInfo ? ` / ${timeInfo} 전` : '';
+        var blockedInfo = $('<p class="blocked_info" style="font-weight: bold; white-space: break-spaces;">').text(`* 차단자: ${data.authUser ? data.authUser : data.AUTH_USER} / 이유: ${data.reason}${timeInfo}`);
         if (type == 'POST') {
             if (MENNAS.isPC) {
                 var isAlreadyExist = e.find('.gall_tit .blocked_info').length;
