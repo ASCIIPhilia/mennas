@@ -18,7 +18,7 @@
     }
 
     /* ===== ELEMENT PARSER ===== */
-    function parsePCPostListElement(e) {
+    function parsePCPostElement(e) {
         return {
             no: parseInt([e.find('.gall_tit a').first().attr('href').split(/[&?]/gi).find((c) => c.startsWith('no='))].map(s => s ? s : 'no=-1')[0].split('no=')[1]),
             url: location.origin + e.find('.gall_tit a').attr('href'),
@@ -37,13 +37,13 @@
         }
     }
 
-    const PC_POST_SELECTOR = '.gall_list .ub-content:not(:has(.gall_num:contains(공지), .gall_num:contains(설문)))';
-    // TODO AD, 뉴스 
+    const PC_POST_SELECTOR = '.gall_list .ub-content:not(:has(.gall_num:contains(공지), .gall_num:contains(설문), .gall_num:contains(뉴스), .gall_num:contains(AD)))';
+    // TODO AD, 뉴스
     function getPCGalleryList() {
-        return $(PC_POST_SELECTOR).toArray().map(e => $(e)).map(parsePCPostListElement);
+        return $(PC_POST_SELECTOR).toArray().map(e => $(e)).map(parsePCPostElement);
     }
 
-    function parseMobilePostListElement(e) {
+    function parseMobilePostElement(e) {
         return {
             no: parseInt(e.find('a').attr('href').split('/').pop().split('?').shift()),
             url: e.find('a').attr('href'),
@@ -54,45 +54,49 @@
             date: e.find('.ginfo > li:nth-child(2)').text(),
             count: parseInt(e.find('.ginfo > li:nth-child(3)').text().split(' ').pop()),
             recommends: parseInt(e.find('.ginfo > li:nth-child(4)').text().split(' ').pop()),
-            comments: parseInt(e.find('.ct').text()),
+            comments: parseInt(e.find('.ct').text()) + (e.find('.vo-txt')[0] ? parseInt(e.find('.vo-txt').text()) : 0),
             voice_comments: e.find('.vo-txt')[0] ? parseInt(e.find('.vo-txt').text()) : 0
         }
     }
 
     const MOBILE_POST_SELECTOR = '.gall-detail-lnktb';
     function getMobileGalleryList() {
-        return $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).map(parseMobilePostListElement);
+        return $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).map(parseMobilePostElement);
     }
 
-    function parsePCCommentListElement(e) {
+    function parsePCCommentElement(e) {
         return {
             no: e.data('no'),
             ip: e.find('.gall_writer').data('ip'),
             nick: e.find('.gall_writer').data('nick'),
             nick_type: e.find('.writer_nikcon img')[0] ? e.find('.writer_nikcon img').attr('src').split('.').slice(-2).shift().split('/').slice(-1).pop() : void 0,
-            comment: e.find('.usertxt').text(),
-            date: e.find('.date_time').text()
+            comment: e.find('p').text(),
+            date: e.find('.date_time').text(),
+            is_voice: e.find('.btn-voice').length > 0,
+            is_dccon: e.find('.coment_dccon_img').length > 0
         }
     }
 
     const PC_COMMENT_SELECTOR = '.cmt_info, .reply_info';
     function getPCCommentList() {
-        return $(PC_COMMENT_SELECTOR).toArray().map(e => $(e)).map(parsePCCommentListElement);
+        return $(PC_COMMENT_SELECTOR).toArray().map(e => $(e)).map(parsePCCommentElement);
     }
 
-    function parseMobileCommentListElement(e) {
+    function parseMobileCommentElement(e) {
         return {
             no: e.attr('no'),
             nick: e.find('.nick').text(),
             nick_type: (e.find('.sp-nick').attr('class') ? e.find('.sp-nick').attr('class') : '').split(' ').pop(),
             date: e.find('.date').text(),
-            comment: e.find('.txt').text()
+            comment: e.find('.txt').text(),
+            is_voice: e.find('.btn-voice').length > 0,
+            is_dccon: e.find('p.txt > img').length > 0,
         }
     }
 
     const MOBILE_COMMENT_SELECTOR = '.all-comment-lst > li.comment, .all-comment-lst > li.comment-add';
     function getMobileCommentList() {
-        return $(MOBILE_COMMENT_SELECTOR).toArray().map(e => $(e)).map(parseMobileCommentListElement);
+        return $(MOBILE_COMMENT_SELECTOR).toArray().map(e => $(e)).map(parseMobileCommentElement);
     }
 
     /* ===== HIDE LOGIC ===== */
@@ -134,13 +138,24 @@
             }
         }
     }
+    function hideElement(e) {
+        try {
+            if (e.parent().hasClass('ub-content')) {
+                e = e.parent();
+                if (e.parent().find('.ub-content').length == e.parent().find('.ub-content:hidden').length) {
+                    e = e.parent().parent().parent().parent();
+                }
+            }
+        } catch (e) {}
+        e.hide();
+    }
 
     function applyMennasByMode(e, type, data) {
         if (localStorage.MENNAS_RESTORE_MODE == 'true') {
             setElementSilenced(e);
             setBlockedInfo(e, type, data);
         } else {
-            e.hide();
+            hideElement(e);
         }
     }
 
@@ -154,29 +169,68 @@
         return isBlacklistPost && isBlacklistPost.isBlocked
     }
 
-    function getBlockedCommentNumber(comments) {
-        var blockedCommentNumber = 0;
+    function getTotalBlockedCommentNumber(comments) {
+        var blockedNumber = 0;
         for (const key in comments) {
             var value = comments[key];
-            blockedCommentNumber += value.isBlocked ? 1 : 0;
+            blockedNumber += value.isBlocked ? 1 : 0;
         }
-        return blockedCommentNumber;
+        return blockedNumber;
+    }
+    function getBlockedVoiceCommentNumber(comments) {
+        var blockedNumber = 0;
+        for (const key in comments) {
+            var value = comments[key];
+            console.log(value);
+            blockedNumber += value.isBlocked && value.info && value.info.is_voice ? 1 : 0;
+        }
+        return blockedNumber;
     }
 
-    function displayBlockedCommentNumber(e, data) {
-        var blockedCommentNumber = 0;
+    function applyBlockedCommentNumber(e, data) {
+        var totalNumber = 0;
+        var voiceNumber = 0;
+        var nonVoiceNumber = 0;
         if (data && data.comments) {
-            blockedCommentNumber = getBlockedCommentNumber(data.comments);
+            totalNumber = getTotalBlockedCommentNumber(data.comments);
+            voiceNumber = getBlockedVoiceCommentNumber(data.comments);
+            nonVoiceNumber = totalNumber - voiceNumber;
         }
 
-        if (blockedCommentNumber != 0) {
-            if (MENNAS.isPC) {
-                if (e.find('.blocked_reply_num').length == 0) {
-                    e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${blockedCommentNumber}</span>`));
+        if (totalNumber != 0) {
+            if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+                if (MENNAS.isPC) {
+                    if (e.find('.blocked_reply_num').length == 0) {
+                        e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${totalNumber}</span>`));
+                    }
+                } else if (MENNAS.isMobile) {
+                    if (e.find('.blocked_reply_num').length == 0) {
+                        e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${totalNumber}</span>`));
+                    }
                 }
-            } else if (MENNAS.isMobile) {
-                if (e.find('.blocked_reply_num').length == 0) {
-                    e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${blockedCommentNumber}</span>`));
+            } else {
+                if (MENNAS.isPC) {
+                    if (e.find('.blocked_number_fixed').length == 0) {
+                        var comment = parsePCPostElement(e);
+                        var fixCommentNumber = comment.comments - totalNumber;
+                        var fixVoiceNumber = comment.voice_comments - voiceNumber;
+                        console.log(comment.voice_comments, voiceNumber);
+                        e.find('.gall_tit .reply_num').addClass('blocked_number_fixed').text(`[${fixCommentNumber}` + (fixVoiceNumber ? `/${fixVoiceNumber}]` : ']'));
+                    }
+                } else if (MENNAS.isMobile) {
+                    if (e.find('.blocked_number_fixed').length == 0) {
+                        var comment = parseMobilePostElement(e);
+                        console.log(comment, totalNumber, nonVoiceNumber);
+                        var fixNonVoiceCommentNumber = comment.comments - comment.voice_comments - nonVoiceNumber;
+                        var fixVoiceNumber = comment.voice_comments - voiceNumber;
+                        console.log('a', fixNonVoiceCommentNumber, fixVoiceNumber);
+                        e.find('.ct').addClass('blocked_number_fixed').text(fixNonVoiceCommentNumber);
+                        if (fixVoiceNumber > 0) {
+                            e.find('.vo-txt').addClass('blocked_number_fixed').text(fixVoiceNumber);
+                        } else {
+                            e.find('.vo').hide();
+                        }
+                    }
                 }
             }
         }
@@ -186,7 +240,7 @@
         var currentPost = json[MENNAS.queryMap.no];
         if (currentPost) {
             $(PC_COMMENT_SELECTOR).toArray().map(e => $(e)).forEach(e => {
-                var no = parsePCCommentListElement(e).no;
+                var no = parsePCCommentElement(e).no;
                 var currentComment = currentPost.comments[no];
 
                 if (isCommentBlocked(currentComment)) {
@@ -195,14 +249,14 @@
             });
         }
         $(PC_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
-            var no = parsePCPostListElement(e).no;
+            var no = parsePCPostElement(e).no;
             var isBlacklistPost = json[no];
 
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
-            displayBlockedCommentNumber(e, isBlacklistPost);
+            applyBlockedCommentNumber(e, isBlacklistPost);
         });
     }
 
@@ -213,7 +267,7 @@
         var currentPost = json[currentNo];
         if (currentPost) {
             $(MOBILE_COMMENT_SELECTOR).toArray().map(e => $(e)).forEach(e => {
-                var no = parseMobileCommentListElement(e).no;
+                var no = parseMobileCommentElement(e).no;
                 var currentComment = currentPost.comments[no];
                 if (isCommentBlocked(currentComment)) {
                     applyMennasByMode(e, 'COMMENT', currentComment);
@@ -222,40 +276,42 @@
         }
 
         $(MOBILE_POST_SELECTOR).toArray().map(e => $(e)).forEach(e => {
-            var no = parseMobilePostListElement(e).no;
+            var no = parseMobilePostElement(e).no;
             var isBlacklistPost = json[no];
 
             // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
             if (isPostBlocked(isBlacklistPost)) {
                 applyMennasByMode(e, 'POST', isBlacklistPost);
             }
-            displayBlockedCommentNumber(e, isBlacklistPost);
+            applyBlockedCommentNumber(e, isBlacklistPost);
         });
 
-        var recommendURL = $(MOBILE_RECOMMEND_SELECTOR).find('#recom_title_topLink').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
-        if (recommendURL) {
-            recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
-            var no = getMobileURLNo(recommendURL);
-            var isBlacklistPost = json[no];
-            // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
-            if (isPostBlocked(isBlacklistPost)) {
-                applyMennasByMode($(MOBILE_RECOMMEND_SELECTOR), 'POST', isBlacklistPost);
-            }
-        }
-
-        $(MOBILE_RECOMMEND_BOX_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
-            var recommendURL = e.find('a').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
+        if ($(MOBILE_RECOMMEND_SELECTOR).length) {
+            var recommendURL = $(MOBILE_RECOMMEND_SELECTOR).find('#recom_title_topLink').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
             if (recommendURL) {
                 recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
                 var no = getMobileURLNo(recommendURL);
                 var isBlacklistPost = json[no];
                 // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
                 if (isPostBlocked(isBlacklistPost)) {
-                    applyMennasByMode(e, 'POST', isBlacklistPost);
+                    applyMennasByMode($(MOBILE_RECOMMEND_SELECTOR), 'POST', isBlacklistPost);
                 }
             }
-        });
-
+        }
+        if ($(MOBILE_RECOMMEND_BOX_SELECTOR).length) {
+            $(MOBILE_RECOMMEND_BOX_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
+                var recommendURL = e.find('a').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
+                if (recommendURL) {
+                    recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
+                    var no = getMobileURLNo(recommendURL);
+                    var isBlacklistPost = json[no];
+                    // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+                    if (isPostBlocked(isBlacklistPost)) {
+                        applyMennasByMode(e, 'POST', isBlacklistPost);
+                    }
+                }
+            });
+        }
     }
 
     function hideBlacklist(json) {
@@ -311,9 +367,11 @@
         $(PC_POST_SELECTOR).find('.gall_num').css('cursor', 'pointer');
         $(PC_POST_SELECTOR).find('.gall_num').on('click', (e) => {
             e = $(e.target).parent();
-            var info = parsePCPostListElement(e);
+            var info = parsePCPostElement(e);
             var no = info.no;
-            var targetText = `${info.no} ${info.subject} [${info.nick} (${info.ip})]`;
+            var targetText = `${info.no} ${info.subject} [${info.nick}${info.ip ? `($ {
+                info.ip
+            })` : ''}]`;
             var reason = prompt(`${targetText}\n\n 이유를 입력해주세요`);
             if (!reason) {
                 alert('작업 취소됨');
@@ -338,7 +396,7 @@
                 var deleteButton = $('<a href="#" class="rt mt"><span class="ct">D</span></a>');
                 deleteButton.on('click', e => {
                     e = $(e.target).parent().parent();
-                    var info = parseMobilePostListElement(e);
+                    var info = parseMobilePostElement(e);
                     var no = info.no;
                     var targetText = `${info.no} ${info.subject} [${info.nick}]`;
                     var reason = prompt(`${targetText}\n\n 이유를 입력해주세요`);
@@ -365,10 +423,12 @@
         $(PC_COMMENT_SELECTOR).find('.date_time').css('cursor', 'pointer');
         $(PC_COMMENT_SELECTOR).find('.date_time').off('click').on('click', e => {
             e = $(e.target).parent().parent();
-            var info = parsePCCommentListElement(e);
+            var info = parsePCCommentElement(e);
             var no = info.no;
             var postNo = parseInt(MENNAS.queryMap.no);
-            var targetText = `${info.no} ${info.comment} [${info.nick} ${info.ip}]`;
+            var targetText = `${info.no} ${info.comment} [${info.nick}${info.ip ? `($ {
+                info.ip
+            })` : ''}]`;
             var reason = prompt(`${targetText}\n\n이유를 입력해주세요`);
             if (!reason) {
                 alert('작업 취소됨');
@@ -390,7 +450,7 @@
     function addMobileCommentDeleteButton() {
         $(MOBILE_COMMENT_SELECTOR).find('.date').off('click').on('click', e => {
             e = $(e.target).parent();
-            var info = parseMobileCommentListElement(e);
+            var info = parseMobileCommentElement(e);
             var no = info.no;
             var postNo = parseInt(getMobileCurrentNo());
 
@@ -414,8 +474,12 @@
     }
 
     function authMennas() {
-        localStorage.MENNAS_AUTH_USER = prompt('유저 이름을 입력해주세요');
-        localStorage.MENNAS_AUTH_CODE = prompt('코드를 입력해주세요');
+        var inputUserName = prompt('유저 이름을 입력해주세요' + (localStorage.MENNAS_AUTH_USER ? `\n취소 버튼: ${localStorage.MENNAS_AUTH_USER}` : ''));
+        localStorage.MENNAS_AUTH_USER = inputUserName ? inputUserName : localStorage.MENNAS_AUTH_USER;
+
+        var inputAuthCode = prompt('코드를 입력해주세요' + (localStorage.MENNAS_AUTH_CODE ? `\n취소 버튼: ${localStorage.MENNAS_AUTH_CODE}` : ''));
+        localStorage.MENNAS_AUTH_CODE = inputUserName ? inputAuthCode : localStorage.MENNAS_AUTH_CODE;
+
         localStorage.MENNAS_RESTORE_MODE = confirm('복구 모드를 사용할까요? (글이 가려지지 않음)');
         alert(`성공적으로 멘나스 계정을 설정했습니다.\nMennas, the Voice of DCInside V${MENNAS.version}/WV${MENNAS.wrapperVersion}\nby ASCIIPhilia (https://mennas.roguelike.network)\nBlacklist Server: ${MENNAS.blacklistServerURL}\nGalleryId: ${MENNAS.galleryId}`);
     }
@@ -474,7 +538,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '1.9.7';
+        MENNAS.version = '2.0.1';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
