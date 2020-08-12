@@ -264,6 +264,7 @@
                     var fixedNumber = commentNumber - totalNumber;
                     fixedNumber < 0 ? 0 : fixedNumber;
                     $('.tit-box .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
+                    $('.update-re .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
                     $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
                 }
 
@@ -575,7 +576,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.1.0';
+        MENNAS.version = '2.1.2';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
