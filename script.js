@@ -240,7 +240,7 @@
     }
     function applyBlockedCommentNumber2CurrentPost(data) {
 
-        if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+        if (localStorage.MENNAS_RESTORE_MODE != 'true') {
             var totalNumber = 0;
 
             if (data && data.comments) {
@@ -575,7 +575,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.0.9';
+        MENNAS.version = '2.1.0';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
