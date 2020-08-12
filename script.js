@@ -249,23 +249,38 @@
 
             if (MENNAS.isPC) {
                 if ($('.info_fixed').length == 0) {
+                    var commentNumber = parseInt($('.gall_comment').text().split(' ').pop());
+                    var fixedNumber = commentNumber - totalNumber;
+                    fixedNumber < 0 ? 0 : fixedNumber;
+                    $('.gall_comment').addClass('info_fixed').text(`댓글 ${fixedNumber}`);
+                    $('.font_red span').addClass('info_fixed').text(`${fixedNumber}`);
+                }
+
+                if ($('.info_update_wait').length > 0) {
+                    $('.info_update_wait').removeClass('info_update_wait');
                     var commentNumber = parseInt($('.font_red span').text());
                     var fixedNumber = commentNumber - totalNumber;
                     fixedNumber < 0 ? 0 : fixedNumber;
-                    console.log(fixedNumber);
-                    $('.gall_comment').addClass('info_fixed').text(`댓글 ${fixedNumber}`);
-                    $('.font_red span').addClass('info_fixed').text(`${fixedNumber}`);
+                    $('.font_red span').text(`${fixedNumber}`);
                 }
 
             } else if (MENNAS.isMobile) {
                 if ($('.info_fixed').length == 0) {
                     var commentNumber = parseInt($('.ginfo2 .point-red').text());
-                    console.log(commentNumber);
                     var fixedNumber = commentNumber - totalNumber;
                     fixedNumber < 0 ? 0 : fixedNumber;
+                    $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
                     $('.tit-box .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
                     $('.update-re .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
-                    $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
+                }
+
+                if ($('.info_update_wait').length > 0) {
+                    $('.info_update_wait').removeClass('info_update_wait');
+                    var commentNumber = parseInt($('.update-re .ct').text().split('').slice(1).reverse().slice(1).reverse().join(''));
+                    var fixedNumber = commentNumber - totalNumber;
+                    fixedNumber < 0 ? 0 : fixedNumber;
+                    $('.tit-box .ct').text(`[${fixedNumber}]`);
+                    $('.update-re .ct').text(`[${fixedNumber}]`);
                 }
 
             }
@@ -536,6 +551,7 @@
             self._viewComments = self.viewComments;
             self.viewComments = function () {
                 self._viewComments.apply(self._viewComments, arguments);
+                $('.font_red span').addClass('info_update_wait');
                 hide();
                 addPCCommentDeleteButton();
             }
@@ -624,7 +640,11 @@
 
         var postObserver1 = new MutationObserver(mutationCallback);
         var postObserver2 = new MutationObserver(mutationCallback);
-        var commentObserver = new MutationObserver(mutationCallback);
+        var commentObserver = new MutationObserver((m) => {
+            $('.tit-box .ct').addClass('info_update_wait');
+            $('.update-re .ct').addClass('info_update_wait');
+            mutationCallback(m);
+        });
 
         try {
             postObserver1.observe($('section:has(.gall-detail-lst)')[0], observerConfig);
