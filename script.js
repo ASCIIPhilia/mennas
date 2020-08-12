@@ -181,7 +181,6 @@
         var blockedNumber = 0;
         for (const key in comments) {
             var value = comments[key];
-            console.log(value);
             blockedNumber += value.isBlocked && value.info && value.info.is_voice ? 1 : 0;
         }
         return blockedNumber;
@@ -214,16 +213,13 @@
                         var comment = parsePCPostElement(e);
                         var fixCommentNumber = comment.comments - totalNumber;
                         var fixVoiceNumber = comment.voice_comments - voiceNumber;
-                        console.log(comment.voice_comments, voiceNumber);
                         e.find('.gall_tit .reply_num').addClass('blocked_number_fixed').text(`[${fixCommentNumber}` + (fixVoiceNumber ? `/${fixVoiceNumber}]` : ']'));
                     }
                 } else if (MENNAS.isMobile) {
                     if (e.find('.blocked_number_fixed').length == 0) {
                         var comment = parseMobilePostElement(e);
-                        console.log(comment, totalNumber, nonVoiceNumber);
                         var fixNonVoiceCommentNumber = comment.comments - comment.voice_comments - nonVoiceNumber;
                         var fixVoiceNumber = comment.voice_comments - voiceNumber;
-                        console.log('a', fixNonVoiceCommentNumber, fixVoiceNumber);
                         e.find('.ct').addClass('blocked_number_fixed').text(fixNonVoiceCommentNumber);
                         if (fixVoiceNumber > 0) {
                             e.find('.vo-txt').addClass('blocked_number_fixed').text(fixVoiceNumber);
