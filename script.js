@@ -239,32 +239,35 @@
         }
     }
     function applyBlockedCommentNumber2CurrentPost(data) {
-        var totalNumber = 0;
 
-        if (data && data.comments) {
-            totalNumber = getTotalBlockedCommentNumber(data.comments);
-        }
+        if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+            var totalNumber = 0;
 
-        if (MENNAS.isPC) {
-            if ($('.info_fixed').length == 0) {
-                var commentNumber = parseInt($('.font_red span').text());
-                var fixedNumber = commentNumber - totalNumber;
-                fixedNumber < 0 ? 0 : fixedNumber;
-                console.log(fixedNumber);
-                $('.gall_comment').addClass('info_fixed').text(`댓글 ${fixedNumber}`);
-                $('.font_red span').addClass('info_fixed').text(`${fixedNumber}`);
+            if (data && data.comments) {
+                totalNumber = getTotalBlockedCommentNumber(data.comments);
             }
 
-        } else if (MENNAS.isMobile) {
-            if ($('.info_fixed').length == 0) {
-                var commentNumber = parseInt($('.ginfo2 .point-red').text());
-                console.log(commentNumber);
-                var fixedNumber = commentNumber - totalNumber;
-                fixedNumber < 0 ? 0 : fixedNumber;
-                $('.tit-box .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
-                $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
-            }
+            if (MENNAS.isPC) {
+                if ($('.info_fixed').length == 0) {
+                    var commentNumber = parseInt($('.font_red span').text());
+                    var fixedNumber = commentNumber - totalNumber;
+                    fixedNumber < 0 ? 0 : fixedNumber;
+                    console.log(fixedNumber);
+                    $('.gall_comment').addClass('info_fixed').text(`댓글 ${fixedNumber}`);
+                    $('.font_red span').addClass('info_fixed').text(`${fixedNumber}`);
+                }
 
+            } else if (MENNAS.isMobile) {
+                if ($('.info_fixed').length == 0) {
+                    var commentNumber = parseInt($('.ginfo2 .point-red').text());
+                    console.log(commentNumber);
+                    var fixedNumber = commentNumber - totalNumber;
+                    fixedNumber < 0 ? 0 : fixedNumber;
+                    $('.tit-box .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
+                    $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
+                }
+
+            }
         }
     }
 
@@ -572,7 +575,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.0.8';
+        MENNAS.version = '2.0.9';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
