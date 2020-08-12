@@ -571,14 +571,18 @@
 
     function initMobile() {
         hide();
-        addMobileCommentDeleteButton();
+        if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+            addMobileCommentDeleteButton();
+        }
         addMobilePostDeleteButtion();
         addMobileAuthButton();
         addMobileMennasInfo();
         addMobileRecommendToggleHook();
         var mutationCallback = (m) => {
             hide();
-            addMobileCommentDeleteButton();
+            if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+                addMobileCommentDeleteButton();
+            }
             addMobilePostDeleteButtion();
         };
 
