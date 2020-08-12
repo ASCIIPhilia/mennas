@@ -110,8 +110,23 @@
         e.css('background-color', 'rgba(65, 49, 96, 0.5)');
     }
 
+    function timeDelta2Simple(delta) {
+        delta = Math.floor(delta / 1000);
+        if (delta < 60) {
+            return delta + '초';
+        } else if (delta < 60 * 60) {
+            return Math.floor(delta / 60) + '분';
+        } else if (delta < 24 * 60 * 60) {
+            return Math.floor(delta / (60 * 60)) + '시간';
+        } else if (delta < 365 * 24 * 60 * 60) {
+            return Math.floor(delta / (24 * 60 * 60)) + '일';
+        } else {
+            return Math.floor(delta / (365 * 24 * 60 * 60)) + '년';
+        }
+    }
+
     function setBlockedInfo(e, type, data) {
-        var blockedInfo = $('<p class="blocked_info" style="font-weight: bold; white-space: break-spaces;">').text(`* Blocker: ${data.authUser ? data.authUser : data.AUTH_USER}, Reason: ${data.reason}`);
+        var blockedInfo = $('<p class="blocked_info" style="font-weight: bold; white-space: break-spaces;">').text(`* 차단자: ${data.authUser ? data.authUser : data.AUTH_USER} / 이유: ${data.reason} / ${timeDelta2Simple(new Date() - new Date(data.queryDate).getTime())} 전`);
         if (type == 'POST') {
             if (MENNAS.isPC) {
                 var isAlreadyExist = e.find('.gall_tit .blocked_info').length;
@@ -199,14 +214,14 @@
         if (totalNumber != 0) {
             if (localStorage.MENNAS_RESTORE_MODE == 'true') {
                 if (MENNAS.isPC) {
-					var comment = parsePCPostElement(e);
-					var fixCommentNumber = comment.comments - totalNumber;
+                    var comment = parsePCPostElement(e);
+                    var fixCommentNumber = comment.comments - totalNumber;
                     if (e.find('.blocked_reply_num').length == 0 && fixCommentNumber > 0) {
                         e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${totalNumber}</span>`));
                     }
                 } else if (MENNAS.isMobile) {
-					var comment = parseMobilePostElement(e);
-					var fixCommentNumber = comment.comments - totalNumber;
+                    var comment = parseMobilePostElement(e);
+                    var fixCommentNumber = comment.comments - totalNumber;
                     if (e.find('.blocked_reply_num').length == 0 && fixCommentNumber > 0) {
                         e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${totalNumber}</span>`));
                     }
