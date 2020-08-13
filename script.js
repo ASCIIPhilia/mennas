@@ -446,9 +446,7 @@
             e = $(e.target).parent();
             var info = parsePCPostElement(e);
             var no = info.no;
-            var targetText = `${info.no} ${info.subject} [${info.nick}${info.ip ? `($ {
-                info.ip
-            })` : ''}]`;
+            var targetText = `${info.no} ${info.subject} [${info.nick}${info.ip ? ` (${info.ip})` : ''}]`;
             var reason = prompt(`${targetText}\n\n 이유를 입력해주세요`);
             if (!reason) {
                 alert('작업 취소됨');
@@ -503,9 +501,7 @@
             var info = parsePCCommentElement(e);
             var no = info.no;
             var postNo = parseInt(MENNAS.queryMap.no);
-            var targetText = `${info.no} ${info.comment} [${info.nick}${info.ip ? `($ {
-                info.ip
-            })` : ''}]`;
+            var targetText = `${info.no} ${info.comment} [${info.nick}${info.ip ? ` (${info.ip})` : ''}]`;
             var reason = prompt(`${targetText}\n\n이유를 입력해주세요`);
             if (!reason) {
                 alert('작업 취소됨');
@@ -616,7 +612,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.1.8';
+        MENNAS.version = '2.1.9';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
