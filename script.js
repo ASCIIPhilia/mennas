@@ -275,7 +275,7 @@
                 if ($('.info_fixed').length == 0) {
                     var commentNumber = parseInt($('.gall_comment').text().split(' ').pop());
                     var fixedNumber = commentNumber - totalNumber;
-                    fixedNumber < 0 ? 0 : fixedNumber;
+                    fixedNumber = fixedNumber < 0 ? 0 : fixedNumber;
                     $('.gall_comment').addClass('info_fixed').text(`댓글 ${fixedNumber}`);
                     $('.font_red span').addClass('info_fixed').text(`${fixedNumber}`);
                 }
@@ -284,7 +284,7 @@
                     $('.info_update_wait').removeClass('info_update_wait');
                     var commentNumber = parseInt($('.font_red span').text());
                     var fixedNumber = commentNumber - totalNumber;
-                    fixedNumber < 0 ? 0 : fixedNumber;
+                    fixedNumber = fixedNumber < 0 ? 0 : fixedNumber;
                     $('.font_red span').text(`${fixedNumber}`);
                 }
 
@@ -292,7 +292,7 @@
                 if ($('.info_fixed').length == 0) {
                     var commentNumber = parseInt($('.ginfo2 .point-red').text());
                     var fixedNumber = commentNumber - totalNumber;
-                    fixedNumber < 0 ? 0 : fixedNumber;
+                    fixedNumber = fixedNumber < 0 ? 0 : fixedNumber;
                     $('.ginfo2 .point-red').addClass('info_fixed').text(`${fixedNumber}`);
                     $('.tit-box .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
                     $('.update-re .ct').addClass('info_fixed').text(`[${fixedNumber}]`);
@@ -302,7 +302,7 @@
                     $('.info_update_wait').removeClass('info_update_wait');
                     var commentNumber = parseInt($('.update-re .ct').text().split('').slice(1).reverse().slice(1).reverse().join(''));
                     var fixedNumber = commentNumber - totalNumber;
-                    fixedNumber < 0 ? 0 : fixedNumber;
+                    fixedNumber = fixedNumber < 0 ? 0 : fixedNumber;
                     $('.tit-box .ct').text(`[${fixedNumber}]`);
                     $('.update-re .ct').text(`[${fixedNumber}]`);
                 }
@@ -612,7 +612,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.1.9';
+        MENNAS.version = '2.2.0';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
