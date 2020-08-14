@@ -300,7 +300,7 @@
 
                 if ($('.info_update_wait').length > 0) {
                     $('.info_update_wait').removeClass('info_update_wait');
-                    var commentNumber = parseInt($('.update-re .ct').text().split('').slice(1).reverse().slice(1).reverse().join(''));
+                    var commentNumber = parseInt($('.tit-box .ct').text().split('').slice(1).reverse().slice(1).reverse().join(''));
                     var fixedNumber = commentNumber - totalNumber;
                     fixedNumber = fixedNumber < 0 ? 0 : fixedNumber;
                     $('.tit-box .ct').text(`[${fixedNumber}]`);
@@ -612,7 +612,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.2.0';
+        MENNAS.version = '2.2.1';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
