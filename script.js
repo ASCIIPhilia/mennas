@@ -221,13 +221,13 @@
                 if (MENNAS.isPC) {
                     var comment = parsePCPostElement(e);
                     var fixCommentNumber = comment.comments - totalNumber;
-                    if (e.find('.blocked_reply_num').length == 0 && fixCommentNumber > 0) {
+                    if (e.find('.blocked_reply_num').length == 0) {
                         e.find('.reply_num').append($(`<span class="blocked_reply_num" style="font-weight:bold; color:#413160; font-size:12px; display: inline-table; letter-spacing: 0em;">&nbsp;-${totalNumber}</span>`));
                     }
                 } else if (MENNAS.isMobile) {
                     var comment = parseMobilePostElement(e);
                     var fixCommentNumber = comment.comments - totalNumber;
-                    if (e.find('.blocked_reply_num').length == 0 && fixCommentNumber > 0) {
+                    if (e.find('.blocked_reply_num').length == 0) {
                         e.find('.rt').append($(`<span class="ct blocked_reply_num" style="font-weight:bold; color:#413160;">-${totalNumber}</span>`));
                     }
                 }
@@ -612,7 +612,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.2.1';
+        MENNAS.version = '2.2.2';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
