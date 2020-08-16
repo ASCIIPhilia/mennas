@@ -338,6 +338,7 @@
 
     const MOBILE_RECOMMEND_SELECTOR = '#recom_box1';
     const MOBILE_RECOMMEND_BOX_SELECTOR = '#recom_title_box';
+    const MOBILE_BOTTOM_CONTENT_BOX_SELECTOR = '#bottom_content';
     function hideMobileElements(json) {
         var currentNo = getMobileCurrentNo();
         var currentPost = json[currentNo];
@@ -377,6 +378,20 @@
         }
         if ($(MOBILE_RECOMMEND_BOX_SELECTOR).length) {
             $(MOBILE_RECOMMEND_BOX_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
+                var recommendURL = e.find('a').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
+                if (recommendURL) {
+                    recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
+                    var no = getMobileURLNo(recommendURL);
+                    var isBlacklistPost = json[no];
+                    // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+                    if (isPostBlocked(isBlacklistPost)) {
+                        applyMennasByMode(e, 'POST', isBlacklistPost);
+                    }
+                }
+            });
+        }
+		if ($(MOBILE_BOTTOM_CONTENT_BOX_SELECTOR).length) {
+            $(MOBILE_BOTTOM_CONTENT_BOX_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
                 var recommendURL = e.find('a').attr('href').match(/['"](http|https):\/\/.+?['"]/gi);
                 if (recommendURL) {
                     recommendURL = recommendURL[0].split('').slice(1).reverse().slice(1).reverse().join('');
@@ -570,7 +585,7 @@
         if (self.viewComments) {
             self._viewComments = self.viewComments;
             self.viewComments = function () {
-                self._viewComments.apply(self._viewComments, arguments);
+                self._viewComments.apply(self, arguments);
                 $('.font_red span').addClass('info_update_wait');
                 hide();
                 addPCCommentDeleteButton();
@@ -582,8 +597,18 @@
         if (self.recom_toggle) {
             self._recom_toggle = self.recom_toggle;
             self.recom_toggle = function () {
-                self._recom_toggle.apply(self._recom_toggle, arguments);
+                self._recom_toggle.apply(self, arguments);
                 hide();
+            }
+        }
+    }
+	
+	function addMobileBottomContentBoxToggleHook() {
+        if (self.bottom_contentBox) {
+            self._bottom_contentBox = self.bottom_contentBox;
+            self.bottom_contentBox = function () {
+               self._bottom_contentBox.apply(self, arguments);
+               hide();
             }
         }
     }
@@ -612,7 +637,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.2.2';
+        MENNAS.version = '2.2.3';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
@@ -650,6 +675,7 @@
         addMobileAuthButton();
         addMobileMennasInfo();
         addMobileRecommendToggleHook();
+		addMobileBottomContentBoxToggleHook();
         var mutationCallback = (m) => {
             hide();
             addMobileCommentDeleteButton();
