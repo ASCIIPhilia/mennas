@@ -11,9 +11,9 @@
     function getMobileURLNo(url) {
         return url.split('/').pop().split('?').shift();
     }
-    function getQueryMap() {
+    function getQueryMap(queryString = window.location.search) {
         var p = [];
-        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (s, k, v) => p[k] = v);
+        queryString.replace(/[?&]+([^=&]+)=([^&]*)/gi, (s, k, v) => p[k] = v);
         return p;
     }
 
@@ -310,7 +310,8 @@
             }
         }
     }
-
+	
+	const PC_RECOMMEND_SELECTOR = '#gall_top_recom .concept_txtlist';
     function hidePCElements(json) {
         var currentPost = json[MENNAS.queryMap.no];
         if (currentPost) {
@@ -334,7 +335,22 @@
             }
             applyBlockedCommentNumber(e, isBlacklistPost);
         });
+		if ($(PC_RECOMMEND_SELECTOR).length) {
+            $(PC_RECOMMEND_SELECTOR).find('li').toArray().map(e => $(e)).forEach(e => {
+                var recommendURL = e.find('a').attr('href');
+                if (recommendURL) {
+                    var no = getQueryMap(recommendURL).no;
+                    var isBlacklistPost = json[no];
+                    // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+                    if (isPostBlocked(isBlacklistPost)) {
+                        applyMennasByMode(e, 'POST', isBlacklistPost);
+                    }
+                }
+            });
+        }
+		
     }
+
 
     const MOBILE_RECOMMEND_SELECTOR = '#recom_box1';
     const MOBILE_RECOMMEND_BOX_SELECTOR = '#recom_title_box';
