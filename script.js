@@ -623,6 +623,11 @@
             }
         }
     }
+	function addPCRecommendTrigger(){
+		$('.btn_bluenext, .btn_blueprev', '#gall_top_recom').click(function() {
+			hide();
+		});
+	}
 
     function addMobileRecommendToggleHook() {
         if (self.recom_toggle) {
@@ -643,70 +648,8 @@
             }
         }
     }
-
-    function addMobileAuthButton() {
-        var authButton = $('<a class="lnk" href="#">멘나스</a>');
-        authButton.on('click', authMennas);
-        $('.gall-lnk-box').append(authButton);
-    }
-
-    function addPCMennasInfo() {
-        var mennasInfo = $(`<div class="copyright"><a href="https://mennas.roguelike.network">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</a></div>`);
-        $('.dcfoot').append(mennasInfo);
-    }
-
-    function addMobileMennasInfo() {
-        var mennasInfo = $(`<a href="https://mennas.roguelike.network"><p class="cpt">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</p></a>`);
-        $('.ft-btm').append(mennasInfo);
-    }
-
-    /* ===== INIT & CORE LOGIC ===== */
-    function initMennas() {
-        try {
-            self.MENNAS = JSON.parse(localStorage.MENNAS);
-        } catch (e) {
-            console.error('Mennas Wrapper is not exist.');
-            return;
-        }
-        MENNAS.version = '2.2.7';
-
-        MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
-        MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
-
-        MENNAS.requestPath = '/request';
-        MENNAS.blacklistPath = `/blacklist?version=${MENNAS.version}`;
-        MENNAS.queryMap = getQueryMap();
-        console.log(`%cMennas, the Voice of DCInside V${MENNAS.version}/WV${MENNAS.wrapperVersion}`, 'font-size:450%;font-weight:bold;color:#413160;font-family:dotum;');
-        console.log('%cby ASCIIPhilia (https://mennas.roguelike.network)', 'font-size:150%;font-weight:bold;');
-        console.log(`Blacklist Server: ${MENNAS.blacklistServerURL}`);
-        console.log(`GalleryId: ${MENNAS.galleryId}`);
-    }
-    const observerConfig = {
-        attributes: true,
-        childList: true,
-        characterData: true
-    };
-
-    function initPC() {
-        hide();
-        addPCPostDeleteButton();
-        addPCCommentDeleteButton();
-        addPCAuthButton();
-        addPCMennasInfo();
-        addPCCommentHook();
-    }
-
-    function initMobile() {
-        hide();
-
-        addMobileCommentDeleteButton();
-        if (localStorage.MENNAS_RESTORE_MODE == 'true') {
-            addMobilePostDeleteButtion();
-        }
-        addMobileAuthButton();
-        addMobileMennasInfo();
-        addMobileRecommendToggleHook();
-		addMobileBottomContentBoxToggleHook();
+	
+	function addMobileMutationTrigger(){
         var mutationCallback = (m) => {
             hide();
             addMobileCommentDeleteButton();
@@ -732,6 +675,73 @@
         try {
             commentObserver.observe($('#comment_box')[0], observerConfig);
         } catch (e) {}
+	}
+
+    function addMobileAuthButton() {
+        var authButton = $('<a class="lnk" href="#">멘나스</a>');
+        authButton.on('click', authMennas);
+        $('.gall-lnk-box').append(authButton);
+    }
+
+    function addPCMennasInfo() {
+        var mennasInfo = $(`<div class="copyright"><a href="https://mennas.roguelike.network">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</a></div>`);
+        $('.dcfoot').append(mennasInfo);
+    }
+
+    function addMobileMennasInfo() {
+        var mennasInfo = $(`<a href="https://mennas.roguelike.network"><p class="cpt">Mennas V${MENNAS.version}/WV${MENNAS.wrapperVersion} by ASCIIPhilia</p></a>`);
+        $('.ft-btm').append(mennasInfo);
+    }
+
+    /* ===== INIT & CORE LOGIC ===== */
+    function initMennas() {
+        try {
+            self.MENNAS = JSON.parse(localStorage.MENNAS);
+        } catch (e) {
+            console.error('Mennas Wrapper is not exist.');
+            return;
+        }
+        MENNAS.version = '2.2.9';
+
+        MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
+        MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
+
+        MENNAS.requestPath = '/request';
+        MENNAS.blacklistPath = `/blacklist?version=${MENNAS.version}`;
+        MENNAS.queryMap = getQueryMap();
+        console.log(`%cMennas, the Voice of DCInside V${MENNAS.version}/WV${MENNAS.wrapperVersion}`, 'font-size:450%;font-weight:bold;color:#413160;font-family:dotum;');
+        console.log('%cby ASCIIPhilia (https://mennas.roguelike.network)', 'font-size:150%;font-weight:bold;');
+        console.log(`Blacklist Server: ${MENNAS.blacklistServerURL}`);
+        console.log(`GalleryId: ${MENNAS.galleryId}`);
+    }
+    const observerConfig = {
+        attributes: true,
+        childList: true,
+        characterData: true
+    };
+
+    function initPC() {
+        hide();
+        addPCPostDeleteButton();
+        addPCCommentDeleteButton();
+        addPCAuthButton();
+        addPCMennasInfo();
+        addPCCommentHook();
+		addPCRecommendTrigger();
+    }
+
+    function initMobile() {
+        hide();
+
+        addMobileCommentDeleteButton();
+        if (localStorage.MENNAS_RESTORE_MODE == 'true') {
+            addMobilePostDeleteButtion();
+        }
+        addMobileAuthButton();
+        addMobileMennasInfo();
+        addMobileRecommendToggleHook();
+		addMobileBottomContentBoxToggleHook();
+		addMobileMutationTrigger();
     }
 
     function startMennas() {
