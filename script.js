@@ -106,7 +106,9 @@
         if (e.parent().hasClass('ub-content')) {
             e = e.parent();
         }
-        e.css('border', '2px solid #413160');
+		if(e.attr('class') != 'concept_img'){
+			e.css('border', '2px solid #413160');
+		}
         e.css('background-color', 'rgba(65, 49, 96, 0.5)');
     }
 
@@ -312,6 +314,7 @@
     }
 	
 	const PC_RECOMMEND_SELECTOR = '#gall_top_recom .concept_txtlist';
+	const PC_RECOMMEND_IMG_SELECTOR = '#gall_top_recom .concept_img';
     function hidePCElements(json) {
         var currentPost = json[MENNAS.queryMap.no];
         if (currentPost) {
@@ -348,7 +351,19 @@
                 }
             });
         }
-		
+		if ($(PC_RECOMMEND_IMG_SELECTOR).length) {
+            $(PC_RECOMMEND_IMG_SELECTOR).toArray().map(e => $(e)).forEach(e => {
+                var recommendURL = e.find('a').attr('href');
+                if (recommendURL) {
+                    var no = getQueryMap(recommendURL).no;
+                    var isBlacklistPost = json[no];
+                    // 블랙 리스트 안에 존재하는 경우더래도 isBlocked가 거짓이면 차단 할 글이 아니므로
+                    if (isPostBlocked(isBlacklistPost)) {
+                        applyMennasByMode(e, 'POST', isBlacklistPost);
+                    }
+                }
+            });
+        }		
     }
 
 
@@ -653,7 +668,7 @@
             console.error('Mennas Wrapper is not exist.');
             return;
         }
-        MENNAS.version = '2.2.4';
+        MENNAS.version = '2.2.7';
 
         MENNAS.isPC = location.href.includes(`id=${MENNAS.galleryId}`);
         MENNAS.isMobile = location.href.includes(`/${MENNAS.galleryId}`);
