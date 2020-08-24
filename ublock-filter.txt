@@ -1,6 +1,5 @@
 [Mennas]
 ! Title: Mennas, the Voice of RLikeGall
-! Expires: 1 days
 ! License: See source for license and credits
 ! Source: https://github.com/ASCIIPhilia/mennas/ublock-filter.txt
 gall.dcinside.com##+js(mennas)
