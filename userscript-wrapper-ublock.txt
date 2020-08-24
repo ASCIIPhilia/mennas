@@ -6,6 +6,7 @@ mennas.js application/javascript
     'use strict';
     var jQueryWaitInterval = setInterval(() => {
         if (self.$) {
+			clearInterval(jQueryWaitInterval);
             var MENNAS = {
                 wrapperVersion: '1.8',
                 scriptURL: 'https://mennas.roguelike.network/script.js',
@@ -14,7 +15,6 @@ mennas.js application/javascript
             };
             localStorage.MENNAS = JSON.stringify(MENNAS);
             $.getScript(MENNAS.scriptURL);
-            clearInterval(jQueryWaitInterval);
         }
     }, 0);
 })();
