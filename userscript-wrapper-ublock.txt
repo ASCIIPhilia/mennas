@@ -6,7 +6,7 @@ mennas.js application/javascript
     'use strict';
     var jQueryWaitInterval = setInterval(() => {
         if (self.$) {
-			clearInterval(jQueryWaitInterval);
+	    clearInterval(jQueryWaitInterval);
             var MENNAS = {
                 wrapperVersion: '1.8',
                 scriptURL: 'https://mennas.roguelike.network/script.js',
