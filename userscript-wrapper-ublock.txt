@@ -6,7 +6,6 @@ mennas.js application/javascript
 (function () {
     'use strict';
     var jQueryWaitInterval = setInterval(() => {
-		console.log('whathe');
         if (self.$) {
             var MENNAS = {
                 wrapperVersion: '1.8',
