@@ -14,7 +14,7 @@ Android Mobile의 경우 Kiwi Browser, Firefox 등의 브라우저에서 유저 
   2. [로갤의 목소리, 멘나스](https://greasyfork.org/ko/scripts/406493-%EB%A1%9C%EA%B0%A4%EC%9D%98-%EB%AA%A9%EC%86%8C%EB%A6%AC-%EB%A9%98%EB%82%98%EC%8A%A4)를 설치합니다. AdGuard를 이용하는 경우 [설치 URL](https://greasyfork.org/scripts/406493-%EB%A1%9C%EA%B0%A4%EC%9D%98-%EB%AA%A9%EC%86%8C%EB%A6%AC-%EB%A9%98%EB%82%98%EC%8A%A4/code/%EB%A1%9C%EA%B0%A4%EC%9D%98%20%EB%AA%A9%EC%86%8C%EB%A6%AC,%20%EB%A9%98%EB%82%98%EC%8A%A4.user.js) 주소를 이용하여 설치합니다.
   
   *. PC 확장 프로그램 지원이 중지된 최신 버전의 Android Firefox의 경우 [uBlock Origin](https://addons.mozilla.org/ko/android/addon/ublock-origin)를 설치한 뒤 "설정 - 고급 사용자 모드"를 활성화하고 고급 사용자 모드 설정의
-"userResourcesLocation unset" 부분을 "userResourcesLocation http://mennas.roguelike.network/userscript-wrapper-ublock.txt"로 수정하고 "설정 - 필터 목록 - 사용자 지정 - 불러오기"에서 "http://mennas.roguelike.network/ublock-filter.txt"를 추가하여 적용하면 사용이 가능합니다.
+"userResourcesLocation unset" 부분을 "userResourcesLocation http://mennas.roguelike.network/userscript-wrapper-ublock.txt" 로 수정하고 "설정 - 필터 목록 - 사용자 지정 - 불러오기"에서 "http://mennas.roguelike.network/ublock-filter.txt" 를 추가하여 적용하면 사용이 가능합니다.
 
 ### 사용 방법(로그라이크 갤러리 블랙리스트 편집자)
   1. 디시인사이드 웹 페이지에 추가된 "멘나스" 버튼을 누릅니다.
