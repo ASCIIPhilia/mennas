@@ -1,0 +1,22 @@
+# Expires: 1 days
+# License: See source for license and credits
+# Source: https://github.com/ASCIIPhilia/mennas
+
+mennas.js application/javascript
+(function () {
+    'use strict';
+    var jQueryWaitInterval = setInterval(() => {
+		console.log('whathe');
+        if (self.$) {
+            var MENNAS = {
+                wrapperVersion: '1.8',
+                scriptURL: 'https://mennas.roguelike.network/script.js',
+                blacklistServerURL: 'https://mennas-rlike.roguelike.network',
+                galleryId: 'rlike'
+            };
+            localStorage.MENNAS = JSON.stringify(MENNAS);
+            $.getScript(MENNAS.scriptURL);
+            clearInterval(jQueryWaitInterval);
+        }
+    }, 0);
+})();
